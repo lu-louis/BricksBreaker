@@ -29,8 +29,9 @@ public class MyGLRenderer extends Activity implements GLSurfaceView.Renderer {
     private Context _context;
 
     private static final String TAG = "MyGLRenderer";
-    private Ballnew mBallnew;
     private List<Brick> mBrickList = new ArrayList<Brick>();
+    //private List<Ballnew> mBallnewList = new ArrayList<Ballnew>();
+    private Ballnew mBallnew ;
 
     private final float[] mMVPMatrix = new float[16];
     private final float[] mProjMatrix = new float[16];
@@ -59,6 +60,12 @@ public class MyGLRenderer extends Activity implements GLSurfaceView.Renderer {
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         GLES20.glDepthFunc(GLES20.GL_LEQUAL);
 
+        /*
+        for(int i = 0 ;i<20; i++) {
+            Ballnew mBallnew = new Ballnew(_context, i);
+            mBallnewList.add(mBallnew);
+        }
+        */
         mBallnew = new Ballnew(_context);
 
         for(int i = 0 ;i<90; i++) {
@@ -91,11 +98,19 @@ public class MyGLRenderer extends Activity implements GLSurfaceView.Renderer {
 
             mBrickList.get(i).draw(mMVPMatrix);
         }
-        /*
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
 
+
+            Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
+
+            Matrix.setRotateM(mRotationMatrix, 0, mAngle, 0, 1.0f, 0f);
+
+            // Combine the rotation matrix with the projection and camera view
+            Matrix.multiplyMM(mMVPMatrix, 0, mRotationMatrix, 0, mMVPMatrix, 0);
+
+
+          //  mBallnewList.get(i).draw(mMVPMatrix);
         mBallnew.draw(mMVPMatrix);
-*/
+
     }
 
     public void onSurfaceChanged(GL10 unused, int width, int height) {
