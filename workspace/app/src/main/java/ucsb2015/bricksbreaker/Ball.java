@@ -17,32 +17,47 @@ public class Ball {
     
     // static property
     public Coordinate   coor;
+    public Coordinate   coor_max;
     public float        radius;
-    public float        vertex;     // vertex matrix
-    public float        texture;    // texture matrix
-    public int          color;
-    public boolean      texture_sel;    // [0] texture, [1] color
+    //public int          color;
+    //public boolean      texture_sel;    // [0] texture, [1] color
 
     // motion parameter
     public Coordinate   direction;  // moving direction
                                     // unit vector, time unit: [ms] ?
 
+    /* List of methods
+     * ---- Implemented:
+     *
+     *      public void ball_init(Coordinate container, int display_mode);
+     *      public void set_location(Coordinate new_coor);
+     *      public void update_location();
+     *      public void update_direction(int hit_dir);
+     *
+     * ---- Undefined:
+     *      public void draw()
+     *      private
+     */
+
+
     /***********************************************
      *
      * function: Ball initialization function
      *
-     * @param screen_size
+     * @param container
      *
      ***********************************************/
 
-    public void ball_init(int screen_size[], int display_mode){
+    public void ball_init(Coordinate container, int display_mode){
         Coordinate start_dir;
         // get landscape
 
         //start_dir.x = 0;
         //start_dir.y = 0;
         //start_dir.z = 0;
-
+        coor_max.x = container.x;
+        coor_max.y = container.y;
+        coor_max.z = container.z;
         // initialize radius
         radius = BALL_SZIE_START;
 
@@ -50,18 +65,19 @@ public class Ball {
         switch(display_mode) {
             case 1:
                 // vertical, portrait
-                coor.x = (int) (screen_size[WIDTH_INDEX] / 2 - radius);
-                coor.y = (int) (screen_size[HEIGHT_INDEX]/10 - radius);
+                coor.x = (int) (container.x / 2 - radius);
+                coor.y = (int) (container.y /10 - radius);
                 break;
             case 2:
                 // horizontal, landscape
-                coor.x = (int) (screen_size[WIDTH_INDEX] /10 - radius);
-                coor.y = (int) (screen_size[HEIGHT_INDEX]/ 2 - radius);
+                coor.x = (int) (container.x /10 - radius);
+                coor.y = (int) (container.y / 2 - radius);
                 break;
 
         }
         // initialize coordinate : z
         coor.z = (int) radius;
+
         // intialize direction
         // [M]
         direction.x = 0;
@@ -72,8 +88,97 @@ public class Ball {
         //vertext = ;
 
         // initialize texture
-        texture_sel = true;
-        color = Color.RED;
+        //texture_sel = true;
+        //color = Color.RED;
         //texture =;
     }
+    /***********************************************
+     *
+     * function: Set location
+     *
+     ***********************************************/
+    public void set_location(Coordinate new_coor){
+        coor.x = new_coor.x;
+        coor.y = new_coor.y;
+        coor.z = new_coor.z;
+    }
+
+    /***********************************************
+     *
+     * function: Update location
+     *
+     ***********************************************/
+
+    public void update_location(){
+
+        coor.x = coor.x + direction.x;
+        coor.y = coor.y + direction.y;
+        coor.z = coor.z + direction.z;
+
+        // out of boundary check
+        if( coor.x < 0 || coor.x > coor_max.x ){
+            coor.x = 0;
+        }
+        if( coor.y < 0 || coor.y > coor_max.y ){
+            coor.y = 0;
+        }
+        if( coor.z < 0 || coor.z > coor_max.z){
+            coor.z = 0;
+        }
+
+    }
+
+    /***********************************************
+     *
+     * function: Update direction
+     * Description:
+     *      If the ball collide with an object in
+     *      one direction, then it will not
+     *
+     * @param hit_dir
+     *      hit direction indicate which direction
+     *      the collision happens with other object.
+     *      For multiple object collision, this func
+     *      need to be called multiple times.
+     *      0:no collision, 1:x, 2:y, 3:z
+     *
+     *
+     ***********************************************/
+    public void update_direction(int hit_dir){
+        if(hit_dir > 0) {
+            switch (hit_dir) {
+                case 1:
+                    // collide in x direction
+                    direction.x *= -1;
+                    break;
+                case 2:
+                    // collide in y direction
+                    direction.y *= -1;
+                    break;
+                case 3:
+                    // collide in x direction
+                    direction.z *= -1;
+                    break;
+            }
+        }
+        else{
+            // if hit the x boundary
+            if( coor.x == 0  ||
+                coor.x == coor_max.x   ) {
+                direction.x *= -1;
+            }
+            // if hit the y boundary
+            if( coor.y == 0 ||
+                coor.y == coor_max.y ){
+                direction.y *= -1;
+            }
+            // if hit the z boundary
+            if( coor.z == 0 ||
+                coor.z == coor_max.z   ){
+                direction.z *= -1;
+            }
+        }
+    }
+
+
 }
