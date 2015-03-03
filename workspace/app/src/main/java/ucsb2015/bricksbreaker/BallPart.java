@@ -1,10 +1,5 @@
 package ucsb2015.bricksbreaker;
 
-/**
- * Created by LuLouis on 2/26/15.
- */
-
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,15 +7,14 @@ import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-import javax.microedition.khronos.opengles.GL10;
-
-public class Brick {
+/**
+ * Created by yumengyin on 3/3/15.
+ */
+public class BallPart {
     private final String vertexShaderCode =
             // This matrix member variable provides a hook to manipulate
             // the coordinates of the objects that use this vertex shader
@@ -51,21 +45,20 @@ public class Brick {
 
 
     //
-    public int      blickNum;
+    public int blickNum;
     public volatile Coordinate coor = new Coordinate();       // location of the brick
-    public int      width   = 1;    //z
-    public int      height  = 2;    //y
-    public int      length  = 4;    //x
-    public boolean  visibility = true; // whether the brick is hit or not
+    public int width = 2;//z
+    public int height = 2;//y
+    public int length = 2;//x
+    public boolean visibility = true; // whether the brick is hit or not
 
-    // object drawing parameter
-    private final   FloatBuffer vertexBuffer,texCoordBuffer,colorBuffer;
-    private final   ByteBuffer  orderBuffer;
-    private final   int         mProgram;
-    private int     mPositionHandle,mTexCoordHandle;//
-    private int     mTextureUniformHandle,mColorHandle;//
-    private int     mMVPMatrixHandle;
-    private int     mTextureDataHandle;
+    private final FloatBuffer vertexBuffer, texCoordBuffer, colorBuffer;
+    private final ByteBuffer orderBuffer;
+    private final int mProgram;
+    private int mPositionHandle, mTexCoordHandle;//
+    private int mTextureUniformHandle, mColorHandle;//
+    private int mMVPMatrixHandle;
+    private int mTextureDataHandle;
 
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
@@ -110,57 +103,63 @@ public class Brick {
     //===================================
     static final int COORDS_PER_TEX = 2;
     static float texCoord[] = {
-            0.0f, 1/6f,
-            1.0f, 1/6f,
+
+            0.0f, 1 / 6f,
+            1.0f, 1 / 6f,
             0.0f, 0.0f,
             1.0f, 0.0f,
 
-            0.0f, 2/6f,
-            1.0f, 2/6f,
-            0.0f, 1/6f,
-            1.0f, 1/6f,
+            0.0f, 2 / 6f,
+            1.0f, 2 / 6f,
+            0.0f, 1 / 6f,
+            1.0f, 1 / 6f,
 
-            0.0f, 3/6f,
-            1.0f, 3/6f,
-            0.0f, 2/6f,
-            1.0f, 2/6f,
+            0.0f, 3 / 6f,
+            1.0f, 3 / 6f,
+            0.0f, 2 / 6f,
+            1.0f, 2 / 6f,
 
-            0.0f, 4/6f,
-            1.0f, 4/6f,
-            0.0f, 3/6f,
-            1.0f, 3/6f,
+            0.0f, 4 / 6f,
+            1.0f, 4 / 6f,
+            0.0f, 3 / 6f,
+            1.0f, 3 / 6f,
 
-            0.0f, 5/6f,
-            1.0f, 5/6f,
-            0.0f, 4/6f,
-            1.0f, 4/6f,
+            0.0f, 5 / 6f,
+            1.0f, 5 / 6f,
+            0.0f, 4 / 6f,
+            1.0f, 4 / 6f,
 
             0.0f, 1.0f,
             1.0f, 1.0f,
-            0.0f, 5/6f,
-            1.0f, 5/6f,
+            0.0f, 5 / 6f,
+            1.0f, 5 / 6f,
+
 
     };
 
     private byte order[] = {
             //Faces definition
 
-            0,1,3, 0,3,2,           //Face front
-            4,5,7, 4,7,6,           //Face right
-            8,9,11, 8,11,10,        //...
-            12,13,15, 12,15,14,
-            16,17,19, 16,19,18,
-            20,21,23, 20,23,22,
+            0, 1, 3, 0, 3, 2,           //Face front
+            4, 5, 7, 4, 7, 6,           //Face right
+            8, 9, 11, 8, 11, 10,        //...
+            12, 13, 15, 12, 15, 14,
+            16, 17, 19, 16, 19, 18,
+            20, 21, 23, 20, 23, 22,
 
     };
 
 
+    private double M_PI = 3.14;
+    private float radius = 0.3f;
+    private int latitudeBands = 6;
+    private int longitudeBands = 15;
 
     private final int texCoordStride = COORDS_PER_TEX * 4; // 4 bytes per float
 
     //===================================
     // Set color with red, green, blue and alpha (opacity) values
-    float color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+    float color[] = {0.0f, 0.0f, 0.0f, 1.0f};
 
     // Set another color
     static final int COLORB_PER_VER = 4;
@@ -173,17 +172,32 @@ public class Brick {
     private final int colorBlendStride = COLORB_PER_VER * 4;
 
     //===================================
+    public BallPart(Context context, int j) {
+        for (int i=0;i<6;i++) {
+            BrickCoords[12*i+0] = radius * (float) Math.sin((i) * M_PI / latitudeBands) * (float) Math.cos((j) * M_PI * 2 / longitudeBands);
+            BrickCoords[12*i+1] = radius * (float) Math.cos((i) * M_PI / latitudeBands) * (float) Math.cos((j) * M_PI * 2 / longitudeBands);
+            BrickCoords[12*i+2] = radius * (float) Math.sin((j) * M_PI * 2 / longitudeBands);
 
-    public Brick(Context context,int number) {
-        coor.x = (number % 3 - 1);
-        coor.y = (number / 3)%6;
-        coor.z = number/18-3;
-        blickNum = number;
+            BrickCoords[12*i+3] = radius * (float) Math.sin((i + 1) * M_PI / latitudeBands) * (float) Math.cos((j) * M_PI * 2 / longitudeBands);
+            BrickCoords[12*i+4] = radius * (float) Math.cos((i + 1) * M_PI / latitudeBands) * (float) Math.cos((j) * M_PI * 2 / longitudeBands);
+            BrickCoords[12*i+5] = radius * (float) Math.sin((j) * M_PI * 2 / longitudeBands);
+
+            BrickCoords[12*i+6] = radius * (float) Math.sin((i) * M_PI / latitudeBands) * (float) Math.cos((j + 1) * M_PI * 2 / longitudeBands);
+            BrickCoords[12*i+7] = radius * (float) Math.cos((i) * M_PI / latitudeBands) * (float) Math.cos((j + 1) * M_PI * 2 / longitudeBands);
+            BrickCoords[12*i+8] = radius * (float) Math.sin((j + 1) * M_PI * 2 / longitudeBands);
+
+            BrickCoords[12*i+9] = radius * (float) Math.sin((i + 1) * M_PI / latitudeBands) * (float) Math.cos((j + 1) * M_PI * 2 / longitudeBands);
+            BrickCoords[12*i+10] = radius * (float) Math.cos((i + 1) * M_PI / latitudeBands) * (float) Math.cos((j + 1) * M_PI * 2 / longitudeBands);
+            BrickCoords[12*i+11] = radius * (float) Math.sin((j + 1) * M_PI * 2 / longitudeBands);
+        }
+        coor.x = 0;
+        coor.y = 0;
+        coor.z = 4;
 
         for (int i = 0; i < vertexCount; i++) {
-            BrickCoords[i * 3] = BrickCoords[i * 3]*length + coor.x * (float) 0.5;
-            BrickCoords[i * 3 + 1] = BrickCoords[i * 3 + 1]*width + coor.y * (float) 0.19;
-            BrickCoords[i * 3 + 2] = BrickCoords[i * 3 + 2]*height + coor.z * (float) 0.25;
+            BrickCoords[i * 3] = BrickCoords[i * 3]  + coor.x * (float) 0.5;
+            BrickCoords[i * 3 + 1] = BrickCoords[i * 3 + 1]  + coor.y * (float) 0.19;
+            BrickCoords[i * 3 + 2] = BrickCoords[i * 3 + 2]  + coor.z * (float) 0.25;
 
         }
 
@@ -260,14 +274,12 @@ public class Brick {
 
     }
 
-    public static int loadTexture(final Context context, final int resourceId)
-    {
+    public static int loadTexture(final Context context, final int resourceId) {
         final int[] textureHandle = new int[1];
 
         GLES20.glGenTextures(1, textureHandle, 0);
 
-        if (textureHandle[0] != 0)
-        {
+        if (textureHandle[0] != 0) {
             final BitmapFactory.Options options = new BitmapFactory.Options();
             options.inScaled = false;   // No pre-scaling
 
@@ -288,8 +300,7 @@ public class Brick {
             bitmap.recycle();
         }
 
-        if (textureHandle[0] == 0)
-        {
+        if (textureHandle[0] == 0) {
             throw new RuntimeException("Error loading texture.");
         }
 
@@ -355,44 +366,15 @@ public class Brick {
             // Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0.
             GLES20.glUniform1i(mTextureUniformHandle, 0);
 
-
 //            GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 12*3);
 
             for (int i = 0; i < 6; i++) {
-                orderBuffer.position(6*i );
+                orderBuffer.position(6 * i);
                 // Draw the triangle
                 GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_BYTE, orderBuffer);
             }
             // Disable vertex array
             GLES20.glDisableVertexAttribArray(mPositionHandle);
         }
-    }
-
-
-    /***********************************************
-     *
-     * function: Brick initialization function
-     *
-     ***********************************************/
-    public Brick(int x, int y, int z, int w, int h, int l, int v, int c){
-        Coordinate coor = new Coordinate();
-        coor.x = x;
-        coor.y = y;
-        coor.z = z;
-
-        width   = w;
-        height  = h;
-        length  = l;
-
-        visibility = true;
-    }
-
-    /***********************************************
-     *
-     * function: brick_hit
-     *
-     ***********************************************/
-    public void brick_hit(){
-        visibility = false;
     }
 }
