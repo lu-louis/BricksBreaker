@@ -25,15 +25,16 @@ import java.util.Random;
  * Created by yumengyin on 3/1/15.
  */
 public class MyGLRenderer extends Activity implements GLSurfaceView.Renderer {
-
+    volatile float x=0;
     private Context _context;
 
     private static final String TAG = "MyGLRenderer";
     private List<Brick> mBrickList = new ArrayList<Brick>();
     //private List<Ballnew> mBallnewList = new ArrayList<Ballnew>();
-    private Ballnew mBallnew ;
+    private Ballnew1 mBallnew1;
 
     private final float[] mMVPMatrix = new float[16];
+    private final float[] mMVPMatrix_Brick = new float[16];
     private final float[] mProjMatrix = new float[16];
     private final float[] mVMatrix = new float[16];
     private final float[] mRotationMatrix = new float[16];
@@ -66,7 +67,8 @@ public class MyGLRenderer extends Activity implements GLSurfaceView.Renderer {
             mBallnewList.add(mBallnew);
         }
         */
-        mBallnew = new Ballnew(_context);
+        //mBallnew = new Ballnew(_context);
+        mBallnew1 = new Ballnew1(_context);
 
         for(int i = 0 ;i<90; i++) {
             Brick mBrick = new Brick(_context, i);
@@ -80,36 +82,32 @@ public class MyGLRenderer extends Activity implements GLSurfaceView.Renderer {
         // Draw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
-        Matrix.setLookAtM(mVMatrix, 0, 0,4,3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+        //Matrix.setLookAtM(mVMatrix, 0, 0,(float)3,(float)3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+        Matrix.setLookAtM(mVMatrix, 0, 0,(float)4.5f,(float)1.5f, 0f, 0f, 1.5f, 0f, 0.0f, 1f);
+
+
+        float [] mMVMatrix = new float[16];
 
 
         // Draw bricks
-        for(int i = 0 ;i<90; i++) {
-            // Calculate the projection and view transformation
-           // Matrix.setLookAtM(mVMatrix,0,-2.0f, 2.0f, -4.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-
-            Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
-
-            Matrix.setRotateM(mRotationMatrix, 0, mAngle, 0, 1.0f, 0f);
-
+        for(int i = 0 ;i<36; i++) {
             // Combine the rotation matrix with the projection and camera view
-            Matrix.multiplyMM(mMVPMatrix, 0, mRotationMatrix, 0, mMVPMatrix, 0);
 
+            Matrix.multiplyMM(mMVPMatrix_Brick, 0, mProjMatrix, 0, mVMatrix, 0);
 
-            mBrickList.get(i).draw(mMVPMatrix);
+            mBrickList.get(i).draw(mMVPMatrix_Brick);
         }
 
+        Matrix.setRotateM(mRotationMatrix, 0, 0, 0, 1.0f, 0f);
+        Matrix.multiplyMM(mMVMatrix, 0, mVMatrix, 0, mRotationMatrix, 0);
+        x+=0.2;
 
-            Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
-
-            Matrix.setRotateM(mRotationMatrix, 0, mAngle, 0, 1.0f, 0f);
-
-            // Combine the rotation matrix with the projection and camera view
-            Matrix.multiplyMM(mMVPMatrix, 0, mRotationMatrix, 0, mMVPMatrix, 0);
+        Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVMatrix, 0);
+        Matrix.translateM(mMVPMatrix,0, mMVPMatrix,0,0,-x,0);
 
 
           //  mBallnewList.get(i).draw(mMVPMatrix);
-        mBallnew.draw(mMVPMatrix);
+        mBallnew1.draw(mMVPMatrix);
 
     }
 

@@ -10,11 +10,12 @@ import android.util.Log;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 
 /**
- * Created by yumengyin on 3/3/15.
+ * Created by yumengyin on 3/8/15.
  */
-public class BallPart {
+public class Ballnew1 {
     private final String vertexShaderCode =
             // This matrix member variable provides a hook to manipulate
             // the coordinates of the objects that use this vertex shader
@@ -27,7 +28,7 @@ public class BallPart {
                     "varying vec4 v_Color;" +
                     "void main() {" +
                     // the matrix must be included as a modifier of gl_Position
-                    "  gl_Position =  uMVPMatrix * vPosition;" +
+                    "  gl_Position = uMVPMatrix * vPosition;" +
                     "	v_tCoordinate = tCoordinate;" +
                     "	v_Color = a_color;" +
                     "}";
@@ -40,126 +41,49 @@ public class BallPart {
                     "void main() {" +
                     // texture2D() is a build-in function to fetch from the texture map
                     "	vec4 texColor = texture2D(s_texture, v_tCoordinate); " +
-                    "  gl_FragColor = texColor*0.5;" +
+                    "  gl_FragColor =  texColor*0.5;" +
                     "}";
 
 
     //
-    public int blickNum;
-    public volatile Coordinate coor = new Coordinate();       // location of the brick
-    public int width = 2;//z
-    public int height = 2;//y
-    public int length = 2;//x
-    public boolean visibility = true; // whether the brick is hit or not
+    public volatile Coordinate   coor = new Coordinate();       // location of the brick
+    public int          width = 1;//z
+    public int          height = 2;//y
+    public int          length = 4;//x
+    public boolean      visibility = true; // whether the brick is hit or not
 
-    private final FloatBuffer vertexBuffer, texCoordBuffer, colorBuffer;
-    private final ByteBuffer orderBuffer;
+    private final FloatBuffer vertexBuffer,texCoordBuffer,colorBuffer;
+    private final ShortBuffer orderBuffer;
     private final int mProgram;
-    private int mPositionHandle, mTexCoordHandle;//
-    private int mTextureUniformHandle, mColorHandle;//
+    private int mPositionHandle,mTexCoordHandle;//
+    private int  mTextureUniformHandle,mColorHandle;//
     private int mMVPMatrixHandle;
     private int mTextureDataHandle;
+    private int latitudeBands = 8;
+    private int longitudeBands = 18;
 
+    private double M_PI = 3.14;
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
 
-    private float BrickCoords[] = {
-            //Vertices according to faces
+    private float BallCoords[];
 
-            -0.05f, -0.05f, 0.05f, //H   front
-            0.05f, -0.05f, 0.05f,  //E
-            -0.05f, 0.05f, 0.05f,  //G
-            0.05f, 0.05f, 0.05f,   //F
-
-            0.05f, -0.05f, 0.05f,  //E
-            0.05f, -0.05f, -0.05f, //B
-            0.05f, 0.05f, 0.05f,    //F
-            0.05f, 0.05f, -0.05f,//C
-
-            0.05f, -0.05f, -0.05f,//B
-            -0.05f, -0.05f, -0.05f,//A
-            0.05f, 0.05f, -0.05f,//C
-            -0.05f, 0.05f, -0.05f,//D
-
-            -0.05f, -0.05f, -0.05f,//A
-            -0.05f, -0.05f, 0.05f,//H
-            -0.05f, 0.05f, -0.05f,//D
-            -0.05f, 0.05f, 0.05f,//G
-
-            -0.05f, -0.05f, -0.05f,//A
-            0.05f, -0.05f, -0.05f,//B
-            -0.05f, -0.05f, 0.05f,//H
-            0.05f, -0.05f, 0.05f,//E
-
-            -0.05f, 0.05f, 0.05f,//G
-            0.05f, 0.05f, 0.05f,//F
-            -0.05f, 0.05f, -0.05f,//D
-            0.05f, 0.05f, -0.05f,//C
-    };
-
-    private final int vertexCount = BrickCoords.length / COORDS_PER_VERTEX;
+    private final int vertexCount = latitudeBands*longitudeBands*4;
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex (should be 4 bytes per float!?)
 
     //===================================
     static final int COORDS_PER_TEX = 2;
-    static float texCoord[] = {
-
-            0.0f, 1 / 6f,
-            1.0f, 1 / 6f,
-            0.0f, 0.0f,
-            1.0f, 0.0f,
-
-            0.0f, 2 / 6f,
-            1.0f, 2 / 6f,
-            0.0f, 1 / 6f,
-            1.0f, 1 / 6f,
-
-            0.0f, 3 / 6f,
-            1.0f, 3 / 6f,
-            0.0f, 2 / 6f,
-            1.0f, 2 / 6f,
-
-            0.0f, 4 / 6f,
-            1.0f, 4 / 6f,
-            0.0f, 3 / 6f,
-            1.0f, 3 / 6f,
-
-            0.0f, 5 / 6f,
-            1.0f, 5 / 6f,
-            0.0f, 4 / 6f,
-            1.0f, 4 / 6f,
-
-            0.0f, 1.0f,
-            1.0f, 1.0f,
-            0.0f, 5 / 6f,
-            1.0f, 5 / 6f,
+    static float texCoord[];
+    private short order[];
 
 
-    };
 
-    private byte order[] = {
-            //Faces definition
-
-            0, 1, 3, 0, 3, 2,           //Face front
-            4, 5, 7, 4, 7, 6,           //Face right
-            8, 9, 11, 8, 11, 10,        //...
-            12, 13, 15, 12, 15, 14,
-            16, 17, 19, 16, 19, 18,
-            20, 21, 23, 20, 23, 22,
-
-    };
-
-
-    private double M_PI = 3.14;
-    private float radius = 0.3f;
-    private int latitudeBands = 6;
-    private int longitudeBands = 15;
-
+    private float radius = 0.2f;
     private final int texCoordStride = COORDS_PER_TEX * 4; // 4 bytes per float
 
     //===================================
     // Set color with red, green, blue and alpha (opacity) values
-    float color[] = {0.0f, 0.0f, 0.0f, 1.0f};
+    float color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
     // Set another color
     static final int COLORB_PER_VER = 4;
@@ -172,32 +96,85 @@ public class BallPart {
     private final int colorBlendStride = COLORB_PER_VER * 4;
 
     //===================================
-    public BallPart(Context context, int j) {
-        for (int i=0;i<6;i++) {
-            BrickCoords[12*i+0] = radius * (float) Math.sin((i) * M_PI / latitudeBands) * (float) Math.cos((j) * M_PI * 2 / longitudeBands);
-            BrickCoords[12*i+1] = radius * (float) Math.cos((i) * M_PI / latitudeBands) * (float) Math.cos((j) * M_PI * 2 / longitudeBands);
-            BrickCoords[12*i+2] = radius * (float) Math.sin((j) * M_PI * 2 / longitudeBands);
+    public Ballnew1(Context context) {
+        BallCoords = new float[latitudeBands*longitudeBands*12];//10800
+        order = new short[latitudeBands*longitudeBands*6];
+        texCoord = new float[latitudeBands*longitudeBands*8];
 
-            BrickCoords[12*i+3] = radius * (float) Math.sin((i + 1) * M_PI / latitudeBands) * (float) Math.cos((j) * M_PI * 2 / longitudeBands);
-            BrickCoords[12*i+4] = radius * (float) Math.cos((i + 1) * M_PI / latitudeBands) * (float) Math.cos((j) * M_PI * 2 / longitudeBands);
-            BrickCoords[12*i+5] = radius * (float) Math.sin((j) * M_PI * 2 / longitudeBands);
 
-            BrickCoords[12*i+6] = radius * (float) Math.sin((i) * M_PI / latitudeBands) * (float) Math.cos((j + 1) * M_PI * 2 / longitudeBands);
-            BrickCoords[12*i+7] = radius * (float) Math.cos((i) * M_PI / latitudeBands) * (float) Math.cos((j + 1) * M_PI * 2 / longitudeBands);
-            BrickCoords[12*i+8] = radius * (float) Math.sin((j + 1) * M_PI * 2 / longitudeBands);
-
-            BrickCoords[12*i+9] = radius * (float) Math.sin((i + 1) * M_PI / latitudeBands) * (float) Math.cos((j + 1) * M_PI * 2 / longitudeBands);
-            BrickCoords[12*i+10] = radius * (float) Math.cos((i + 1) * M_PI / latitudeBands) * (float) Math.cos((j + 1) * M_PI * 2 / longitudeBands);
-            BrickCoords[12*i+11] = radius * (float) Math.sin((j + 1) * M_PI * 2 / longitudeBands);
-        }
         coor.x = 0;
-        coor.y = 0;
-        coor.z = 4;
+        coor.y = - 1;
+        coor.z = 0;
+
+        //private int latitudeBands = 30;
+        //private int longitudeBands = 30;
+        //int count = 0;
+        Log.d("T", latitudeBands+" ");
+        Log.d("T", longitudeBands+" ");
+        int index;
+        for (int i = 0; i < latitudeBands; i++) {
+            for (int j=0; j < longitudeBands; j++) {
+
+                BallCoords[i*longitudeBands*4*3 + j*4*3] = radius * (float)Math.sin((i)*M_PI/latitudeBands)*(float)Math.cos(2*(j)*M_PI/longitudeBands);
+                BallCoords[i*longitudeBands*4*3 + j*4*3 + 1] = radius * (float)Math.cos((i)*M_PI/latitudeBands)*(float)Math.cos(2*(j)*M_PI/longitudeBands);
+                BallCoords[i*longitudeBands*4*3 + j*4*3 + 2] = radius * (float)Math.sin(2*(j)*M_PI/longitudeBands);
+
+
+
+                BallCoords[i*longitudeBands*4*3 + j*4*3 + 3] = radius * (float)Math.sin((i+1)*M_PI/latitudeBands)*(float)Math.cos(2*(j)*M_PI/longitudeBands);
+                BallCoords[i*longitudeBands*4*3 + j*4*3 + 4] = radius * (float)Math.cos((i+1)*M_PI/latitudeBands)*(float)Math.cos(2*(j)*M_PI/longitudeBands);
+                BallCoords[i*longitudeBands*4*3 + j*4*3 + 5] = radius * (float)Math.sin(2*(j)*M_PI/longitudeBands);
+
+                BallCoords[i*longitudeBands*4*3 + j*4*3 + 6] = radius * (float)Math.sin((i)*M_PI/latitudeBands)*(float)Math.cos(2*(j+1)*M_PI/longitudeBands);
+                BallCoords[i*longitudeBands*4*3 + j*4*3 + 7] = radius * (float)Math.cos((i)*M_PI/latitudeBands)*(float)Math.cos(2*(j+1)*M_PI/longitudeBands);
+                BallCoords[i*longitudeBands*4*3 + j*4*3 + 8] = radius * (float)Math.sin(2*(j+1)*M_PI/longitudeBands);
+
+                BallCoords[i*longitudeBands*4*3 + j*4*3 + 9] = radius * (float)Math.sin((i+1)*M_PI/latitudeBands)*(float)Math.cos(2*(j+1)*M_PI/longitudeBands);
+                BallCoords[i*longitudeBands*4*3 + j*4*3 + 10] = radius * (float)Math.cos((i+1)*M_PI/latitudeBands)*(float)Math.cos(2*(j+1)*M_PI/longitudeBands);
+                BallCoords[i*longitudeBands*4*3 + j*4*3 + 11] = radius * (float)Math.sin(2*(j+1)*M_PI/longitudeBands);
+                index = i*longitudeBands*4*3+j*4*3+11;
+                if(index > 10799)
+                    Log.d("T", index+" ");
+
+
+                order[i*longitudeBands*6 + j*6]   =(short)(0+i*longitudeBands*4 + j*4);
+                order[i*longitudeBands*6 + j*6+1] =(short)(1+i*longitudeBands*4 + j*4);
+                order[i*longitudeBands*6 + j*6+2] =(short)(3+i*longitudeBands*4 + j*4);
+                order[i*longitudeBands*6 + j*6+3] =(short)(3+i*longitudeBands*4 + j*4);
+                order[i*longitudeBands*6 + j*6+4] =(short)(2+i*longitudeBands*4 + j*4);
+                order[i*longitudeBands*6 + j*6+5] =(short)(0+i*longitudeBands*4 + j*4);
+
+                /*
+                0.0f, 2/6f,
+                        1.0f, 2/6f,
+                        0.0f, 1/6f,
+                        1.0f, 1/6f,
+                  */
+                texCoord[i*longitudeBands*8 + j*8] = 0.0f;
+                texCoord[i*longitudeBands*8 + j*8 + 1] = ((i*longitudeBands+j)%6)/6f;
+
+                texCoord[i*longitudeBands*8 + j*8 + 2] = 1.0f;
+                texCoord[i*longitudeBands*8 + j*8 + 3] = ((i*longitudeBands+j)%6)/6f;
+
+                texCoord[i*longitudeBands*8 + j*8 + 4] = 0.0f;
+                texCoord[i*longitudeBands*8 + j*8 + 5] = ((i*longitudeBands+j+1)%6)/6f;
+
+                texCoord[i*longitudeBands*8 + j*8 + 6] = 1.0f;
+                texCoord[i*longitudeBands*8 + j*8 + 7] = ((i*longitudeBands+j+1)%6)/6f;
+
+
+            }
+
+        }
+
+        coor.x = 0;
+        coor.y = 1;
+        coor.z = 3;
 
         for (int i = 0; i < vertexCount; i++) {
-            BrickCoords[i * 3] = BrickCoords[i * 3]  + coor.x * (float) 0.5;
-            BrickCoords[i * 3 + 1] = BrickCoords[i * 3 + 1]  + coor.y * (float) 0.19;
-            BrickCoords[i * 3 + 2] = BrickCoords[i * 3 + 2]  + coor.z * (float) 0.25;
+            BallCoords[i * 3] = BallCoords[i * 3]  + coor.x * (float) 0.25;
+            BallCoords[i * 3 + 1] = BallCoords[i * 3 + 1]  + coor.y * (float) 1.2;
+            BallCoords[i * 3 + 2] = BallCoords[i * 3 + 2]  + coor.z * (float) 0.5;
 
         }
 
@@ -208,14 +185,14 @@ public class BallPart {
         // initialize vertex byte buffer for shape coordinates
         ByteBuffer bb = ByteBuffer.allocateDirect(
                 // (number of coordinate values * 4 bytes per float)
-                BrickCoords.length * 4);
+                BallCoords.length * 4);
         // use the device hardware's native byte order
         bb.order(ByteOrder.nativeOrder());
 
         // create a floating point buffer from the ByteBuffer
         vertexBuffer = bb.asFloatBuffer();
         // add the coordinates to the FloatBuffer
-        vertexBuffer.put(BrickCoords);
+        vertexBuffer.put(BallCoords);
         // set the buffer to read the first coordinate
         vertexBuffer.position(0);
 
@@ -248,9 +225,16 @@ public class BallPart {
         colorBuffer.position(0);
 
 
-        orderBuffer = ByteBuffer.allocateDirect(order.length);
+
+
+        ByteBuffer obb = ByteBuffer.allocateDirect(
+                order.length * 4);
+        obb.order(ByteOrder.nativeOrder());
+
+        orderBuffer = obb.asShortBuffer();
         orderBuffer.put(order);
         orderBuffer.position(0);
+
 
         //===================================
         // loading an image into texture
@@ -274,12 +258,14 @@ public class BallPart {
 
     }
 
-    public static int loadTexture(final Context context, final int resourceId) {
+    public static int loadTexture(final Context context, final int resourceId)
+    {
         final int[] textureHandle = new int[1];
 
         GLES20.glGenTextures(1, textureHandle, 0);
 
-        if (textureHandle[0] != 0) {
+        if (textureHandle[0] != 0)
+        {
             final BitmapFactory.Options options = new BitmapFactory.Options();
             options.inScaled = false;   // No pre-scaling
 
@@ -300,7 +286,8 @@ public class BallPart {
             bitmap.recycle();
         }
 
-        if (textureHandle[0] == 0) {
+        if (textureHandle[0] == 0)
+        {
             throw new RuntimeException("Error loading texture.");
         }
 
@@ -336,6 +323,7 @@ public class BallPart {
             MyGLRenderer.checkGlError("glVertexAttribPointer...color");
 
 
+
             // setting texture coordinate to vertex shader
             mTexCoordHandle = GLES20.glGetAttribLocation(mProgram, "tCoordinate");
             GLES20.glEnableVertexAttribArray(mTexCoordHandle);
@@ -346,7 +334,7 @@ public class BallPart {
 
 
             // get handle to shape's transformation matrix
-            //  mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
+            mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
             MyGLRenderer.checkGlError("glGetUniformLocation");
 
             // Apply the projection and view transformation
@@ -368,10 +356,10 @@ public class BallPart {
 
 //            GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 12*3);
 
-            for (int i = 0; i < 6; i++) {
-                orderBuffer.position(6 * i);
+            for (int i = 0; i < latitudeBands*longitudeBands; i++) {
+                orderBuffer.position(6*i );//* ((i+blickNum)%6));
                 // Draw the triangle
-                GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_BYTE, orderBuffer);
+                GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_SHORT, orderBuffer);
             }
             // Disable vertex array
             GLES20.glDisableVertexAttribArray(mPositionHandle);

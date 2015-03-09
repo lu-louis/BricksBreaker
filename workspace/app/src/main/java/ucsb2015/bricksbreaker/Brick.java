@@ -177,13 +177,19 @@ public class Brick {
     public Brick(Context context,int number) {
         coor.x = (number % 3 - 1);
         coor.y = (number / 3)%6;
-        coor.z = number/18-3;
+
         blickNum = number;
+        if(number/18==0){
+            coor.z = 5;
+        }
+        else{
+            coor.z = 1;
+        }
 
         for (int i = 0; i < vertexCount; i++) {
             BrickCoords[i * 3] = BrickCoords[i * 3]*length + coor.x * (float) 0.5;
-            BrickCoords[i * 3 + 1] = BrickCoords[i * 3 + 1]*width + coor.y * (float) 0.19;
-            BrickCoords[i * 3 + 2] = BrickCoords[i * 3 + 2]*height + coor.z * (float) 0.25;
+            BrickCoords[i * 3 + 1] = BrickCoords[i * 3 + 1]*width + coor.y * (float) 0.2;
+            BrickCoords[i * 3 + 2] = BrickCoords[i * 3 + 2]*height + coor.z * (float) 0.5;
 
         }
 
@@ -374,6 +380,7 @@ public class Brick {
      * function: Brick initialization function
      *
      ***********************************************/
+    /*
     public Brick(int x, int y, int z, int w, int h, int l, int v, int c){
         Coordinate coor = new Coordinate();
         coor.x = x;
@@ -386,6 +393,7 @@ public class Brick {
 
         visibility = true;
     }
+    */
 
     /***********************************************
      *
