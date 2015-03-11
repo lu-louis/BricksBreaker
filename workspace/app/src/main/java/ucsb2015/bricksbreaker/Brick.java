@@ -172,8 +172,17 @@ public class Brick {
     //private final int colorBlendCount = colorBlend.length / COLORB_PER_VER;
     private final int colorBlendStride = COLORB_PER_VER * 4;
 
+
     //===================================
 
+    /************************************
+     *
+     * Constructor
+     *
+     * @param context
+     * @param number
+     *
+     ************************************/
     public Brick(Context context,int number) {
         coor.x = (number % 3 - 1);
         coor.y = (number / 3)%6;
