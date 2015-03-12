@@ -5,9 +5,9 @@ package ucsb2015.bricksbreaker;
  */
 public class Coordinate {
 
-    public int x;
-    public int y;
-    public int z;
+    public float x;
+    public float y;
+    public float z;
 
     public Coordinate(){
         x = 0;
