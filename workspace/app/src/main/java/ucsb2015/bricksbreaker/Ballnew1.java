@@ -96,6 +96,12 @@ public class Ballnew1 {
     private final int colorBlendStride = COLORB_PER_VER * 4;
 
     //===================================
+
+    /*****************************************
+     *
+     * constructor
+     *
+     *****************************************/
     public Ballnew1(Context context) {
         BallCoords = new float[latitudeBands*longitudeBands*12];//10800
         order = new short[latitudeBands*longitudeBands*6];
