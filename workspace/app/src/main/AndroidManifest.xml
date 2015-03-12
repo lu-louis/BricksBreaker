@@ -18,10 +18,6 @@
             android:label="@string/title_activity_algorithm_text" >
         </activity>
         <activity
-            android:name=".GameViewActiviy"
-            android:label="@string/title_activity_game_view_activiy" >
-        </activity>
-        <activity
             android:name=".SelectionMenuActivity"
             android:label="@string/title_activity_selection_menu" >
             <intent-filter>

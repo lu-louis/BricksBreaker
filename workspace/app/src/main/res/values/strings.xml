@@ -4,4 +4,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_algorithm_text">AlgorithmTextActivity</string>
+    <string name="title_activity_game_view_activiy">GameViewActiviy</string>
+    <string name="title_activity_selection_menu">SelectionMenuActivity</string>
+    <string name="title_activity_profile">ProfileActivity</string>
 </resources>
