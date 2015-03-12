@@ -100,8 +100,7 @@ public class Ballnew1 {
         BallCoords = new float[latitudeBands*longitudeBands*12];//10800
         order = new short[latitudeBands*longitudeBands*6];
         texCoord = new float[latitudeBands*longitudeBands*8];
-
-
+        
         coor.x = 0;
         coor.y = - 1;
         coor.z = 0;
