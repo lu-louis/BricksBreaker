@@ -12,7 +12,7 @@ public class BrickSetting {
     private final int   BRICK_SPACE_Y  = 100;
     private final int   BRICK_SPACE_Z  = 100;
 
-    public Coordinate relLocation;
+    public Coordinate relCoor;
     public Coordinate absCoor;
     public boolean visibility;
     public int width;
@@ -27,7 +27,10 @@ public class BrickSetting {
         height  = BRICK_HEIGHT;
         length  = BRICK_LENGTH;
 
-        relLocation = location;
+        relCoor = new Coordinate();
+        absCoor = new Coordinate();
+
+        relCoor = location;
         absCoor.x = BRICK_WIDTH/2 + BRICK_WIDTH*location.x  + BRICK_SPACE_X;
         absCoor.y = BRICK_HEIGHT/2 + BRICK_WIDTH*location.y + BRICK_SPACE_Y;
         absCoor.z = BRICK_LENGTH/2 + BRICK_WIDTH*location.z + BRICK_SPACE_Z;
