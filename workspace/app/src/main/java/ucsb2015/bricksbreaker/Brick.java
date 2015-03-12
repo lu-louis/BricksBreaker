@@ -308,6 +308,42 @@ public class Brick {
             case 7:
                 mTextureDataHandle = loadTexture(context, R.drawable.pic7);
                 break;
+            case 8:
+                mTextureDataHandle = loadTexture(context, R.drawable.pic8);
+                break;
+            case 9:
+                mTextureDataHandle = loadTexture(context, R.drawable.pic9);
+                break;
+            case 10:
+                mTextureDataHandle = loadTexture(context, R.drawable.pic10);
+                break;
+            case 11:
+                mTextureDataHandle = loadTexture(context, R.drawable.pic11);
+                break;
+            case 12:
+                mTextureDataHandle = loadTexture(context, R.drawable.pic12);
+                break;
+            case 13:
+                mTextureDataHandle = loadTexture(context, R.drawable.pic13);
+                break;
+            case 14:
+                mTextureDataHandle = loadTexture(context, R.drawable.pic14);
+                break;
+            case 15:
+                mTextureDataHandle = loadTexture(context, R.drawable.pic15);
+                break;
+            case 16:
+                mTextureDataHandle = loadTexture(context, R.drawable.pic16);
+                break;
+            case 17:
+                mTextureDataHandle = loadTexture(context, R.drawable.pic17);
+                break;
+            case 18:
+                mTextureDataHandle = loadTexture(context, R.drawable.pic18);
+                break;
+            case 19:
+                mTextureDataHandle = loadTexture(context, R.drawable.pic19);
+                break;
             default:
                 mTextureDataHandle = loadTexture(context, R.drawable.pic1);
                 break;
