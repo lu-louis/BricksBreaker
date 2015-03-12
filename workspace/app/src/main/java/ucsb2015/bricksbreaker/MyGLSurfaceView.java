@@ -15,10 +15,12 @@ import java.util.Random;
 class MyGLSurfaceView extends GLSurfaceView {
 
     private final MyGLRenderer mRenderer;
+    private final double   DIM_SCALE = 1000.0;
+    private final double   DIM_X     = 1500.0;
 
     public volatile int randomInt1,randomInt2,randomInt3;
 
-    public MyGLSurfaceView(Context context) {
+    public MyGLSurfaceView(Context context, int level) {
         super(context);
 
 
@@ -36,7 +38,7 @@ class MyGLSurfaceView extends GLSurfaceView {
         // Render the view only when there is a change in the drawing data
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 
-
+        mRenderer.set_game_level(level);
 
     }
 
@@ -56,9 +58,15 @@ class MyGLSurfaceView extends GLSurfaceView {
         float x = e.getX();
         float y = e.getY();
 
+
+
         switch (e.getAction()) {
             case MotionEvent.ACTION_MOVE:
+                int touch_x = (int) x;
+                int touch_y = (int) y;
 
+                mRenderer.touch_event(touch_x, touch_y);
+                /*
                 float dx = x - mPreviousX;
                 float dy = y - mPreviousY;
 
@@ -74,11 +82,26 @@ class MyGLSurfaceView extends GLSurfaceView {
                 System.out.print("width = " + getWidth());
                 System.out.print("height = " + getHeight());
                 mRenderer.mAngle += (dx + dy) * TOUCH_SCALE_FACTOR;  // = 180.0f / 320
+                */
                 requestRender();
         }
 
-        mPreviousX = x;
-        mPreviousY = y;
         return true;
     }
+
+    /*
+    public void brick_hit(int index){
+        mRenderer.brick_hit(index);
+    }
+
+    public void update_ball_loc(Coordinate coor){
+        Coordinate coor_tran = new Coordinate();
+        //coor_tran = CoorTranslate(coor);
+        mRenderer.update_ball_loc(coor);
+    }
+
+    public Coordinate CoorTranslate(Coordinate coor){
+        return coor;
+    }
+    */
 }

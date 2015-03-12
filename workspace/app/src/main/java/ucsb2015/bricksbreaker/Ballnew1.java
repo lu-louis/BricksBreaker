@@ -313,7 +313,7 @@ public class Ballnew1 {
 
             // setting vertex color
             mColorHandle = GLES20.glGetAttribLocation(mProgram, "a_color");
-            Log.i("chuu", "Error: mColorHandle = " + mColorHandle);
+            //Log.i("chuu", "Error: mColorHandle = " + mColorHandle);
 
             GLES20.glEnableVertexAttribArray(mColorHandle);
             GLES20.glVertexAttribPointer(mColorHandle, COLORB_PER_VER,
