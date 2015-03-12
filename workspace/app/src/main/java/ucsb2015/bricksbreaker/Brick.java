@@ -110,7 +110,7 @@ public class Brick {
     //===================================
     static final int COORDS_PER_TEX = 2;
     static float texCoord[] = {
-            0.0f, 1/6f,
+           /* 0.0f, 1/6f,
             1.0f, 1/6f,
             0.0f, 0.0f,
             1.0f, 0.0f,
@@ -138,7 +138,36 @@ public class Brick {
             0.0f, 1.0f,
             1.0f, 1.0f,
             0.0f, 5/6f,
-            1.0f, 5/6f,
+            1.0f, 5/6f,*/
+            0.0f, 1.0f,
+            1.0f, 1.0f,
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+
+            0.0f, 1.0f,
+            1.0f, 1.0f,
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+
+            0.0f, 1.0f,
+            1.0f, 1.0f,
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+
+            0.0f, 1.0f,
+            1.0f, 1.0f,
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+
+            0.0f, 1.0f,
+            1.0f, 1.0f,
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+
+            0.0f, 1.0f,
+            1.0f, 1.0f,
+            0.0f, 0.0f,
+            1.0f, 0.0f,
 
     };
 
@@ -256,7 +285,34 @@ public class Brick {
         //===================================
         // loading an image into texture
         //===================================
-        mTextureDataHandle = loadTexture(context, R.drawable.colorpic);
+        int i = number%7;
+        switch(i){
+           case 1:
+               mTextureDataHandle = loadTexture(context, R.drawable.pic1);
+               break;
+            case 2:
+                mTextureDataHandle = loadTexture(context, R.drawable.pic2);
+                break;
+            case 3:
+                mTextureDataHandle = loadTexture(context, R.drawable.pic3);
+                break;
+            case 4:
+                mTextureDataHandle = loadTexture(context, R.drawable.pic4);
+                break;
+            case 5:
+                mTextureDataHandle = loadTexture(context, R.drawable.pic5);
+                break;
+            case 6:
+                mTextureDataHandle = loadTexture(context, R.drawable.pic6);
+                break;
+            case 7:
+                mTextureDataHandle = loadTexture(context, R.drawable.pic7);
+                break;
+            default:
+                mTextureDataHandle = loadTexture(context, R.drawable.pic1);
+                break;
+        }
+       // mTextureDataHandle = loadTexture(context, R.drawable.);
 
         //===================================
         // shader program
