@@ -13,7 +13,6 @@ public class BallSetting {
 
     // static property
     public Coordinate   coor;
-    public Coordinate   coor_max;
     public float        radius;
 
     // motion parameter
@@ -33,7 +32,13 @@ public class BallSetting {
      *      private
      */
     public BallSetting(){
+        coor = new Coordinate();
+        direction = new Coordinate();
 
+        // intialize direction
+        direction.x = 0;
+        direction.y = 0;
+        direction.z = 0;
     }
 
     /***********************************************
@@ -46,14 +51,6 @@ public class BallSetting {
 
     public void ball_init(Coordinate container, int display_mode){
         Coordinate start_dir;
-        // get landscape
-
-        //start_dir.x = 0;
-        //start_dir.y = 0;
-        //start_dir.z = 0;
-        coor_max.x = container.x;
-        coor_max.y = container.y;
-        coor_max.z = container.z;
         // initialize radius
         radius = BALL_SZIE_START;
 
@@ -74,19 +71,8 @@ public class BallSetting {
         // initialize coordinate : z
         coor.z = (int) radius;
 
-        // intialize direction
-        // [M]
-        direction.x = 0;
-        direction.y = 0;
-        direction.z = 1;
 
-        // initialize vertex
-        //vertext = ;
 
-        // initialize texture
-        //texture_sel = true;
-        //color = Color.RED;
-        //texture =;
     }
     /***********************************************
      *
@@ -105,7 +91,7 @@ public class BallSetting {
      *
      ***********************************************/
 
-    public void update_location(){
+    public void update_location(Coordinate coor_max){
 
         coor.x = coor.x + direction.x;
         coor.y = coor.y + direction.y;
@@ -140,7 +126,7 @@ public class BallSetting {
      *
      *
      ***********************************************/
-    public void update_direction(int hit_dir){
+    public void update_direction(int hit_dir, Coordinate coor_max){
         if(hit_dir > 0) {
             switch (hit_dir) {
                 case 1:
